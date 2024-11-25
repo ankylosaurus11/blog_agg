@@ -8,5 +8,17 @@ type state struct {
 
 type command struct {
 	Name     string
-	Commands []string
+	Command []string
+}
+
+type commands struct {
+	
+}
+
+func handlerLogin(s *state, cmd command) error {
+	if cmd.Command = []string{} {
+		errors.New("not enough arguments were provided")
+	}
+	s.ConfigPointer.Config.CurrentUserName = cmd.Command[1]
+	fmt.SPrintf("user: %v, has been set.", cmd.Command[1])
 }
