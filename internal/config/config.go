@@ -3,7 +3,9 @@ package gatorconfig
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
+	"path/filepath"
 )
 
 type Config struct {
@@ -11,8 +13,23 @@ type Config struct {
 	CurrentUserName string `json:"current_user_name"`
 }
 
-func Read() Config {
-	fileContent, err := os.ReadFile("/home/anky/workspace/github.com/ankylosaurus11/blog_agg/gatorconfig.json")
+const configFileName = ".gatorconfig.json"
+
+func getConfigFilePath() (string, error) {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(homeDir, configFileName), nil
+}
+
+func Read() (Config, error) {
+	filePath, err := getConfigFilePath()
+	if err != nil {
+		log.Fatalf("Error fetching file path: %v", err)
+	}
+	fileContent, err := os.ReadFile(filePath)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -23,6 +40,24 @@ func Read() Config {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(gatorconfig)
-	return gatorconfig
+
+	return gatorconfig, err
+}
+
+func (c *Config) SetUser(userName string) error {
+	c.CurrentUserName = userName
+	filePath, err := getConfigFilePath()
+	if err != nil {
+		return err
+	}
+	jsonData, err := json.MarshalIndent(c, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	err = os.WriteFile(filePath, jsonData, 0644)
+	if err != nil {
+		return err
+	}
+	return nil
 }
