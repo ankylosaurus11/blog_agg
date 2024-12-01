@@ -18,18 +18,20 @@ func main() {
 		log.Fatalf("Error reading config: %v", err)
 	}
 
-	var newState state
-
-	newState.ConfigPointer = &cfg
-
 	db, err := sql.Open("postgres", cfg.DBURL)
+	if err != nil {
+		log.Fatalf("Error opening database: %v", err)
+	}
 
-	dbQueries := database.New(db)
+	var newState state
+	newState.ConfigPointer = &cfg
+	newState.db = database.New(db)
 
 	commands := commands{
 		Cmd: make(map[string]func(*state, command) error),
 	}
 
+	commands.register("register", handlerRegister)
 	commands.register("login", handlerLogin)
 
 	if len(os.Args) < 2 {
@@ -39,7 +41,7 @@ func main() {
 	args := os.Args[2:]
 
 	if len(args) == 0 {
-		fmt.Println("username is required")
+		log.Fatal("username is required")
 	}
 
 	cmd := command{
