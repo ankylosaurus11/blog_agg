@@ -41,9 +41,17 @@ func handlerLogin(s *state, cmd command) error {
 	if len(cmd.Command) == 0 {
 		return errors.New("not enough arguments were provided")
 	}
+
+	ctx := context.Background()
+	_, err := s.db.GetUser(ctx, cmd.Command[0])
+	if err != nil {
+		return errors.New("user does not exist")
+	}
+
 	if err := s.ConfigPointer.SetUser(cmd.Command[0]); err != nil {
 		return err
 	}
+
 	fmt.Println("set user:", cmd.Command[0])
 
 	return nil
