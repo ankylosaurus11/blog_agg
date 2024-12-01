@@ -1,21 +1,30 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"os"
 
+	_ "github.com/lib/pq"
+
 	gatorconfig "github.com/ankylosaurus11/blog_agg/internal/config"
+	"github.com/ankylosaurus11/blog_agg/internal/database"
 )
 
 func main() {
-	var newState state
 	cfg, err := gatorconfig.Read()
 	if err != nil {
 		log.Fatalf("Error reading config: %v", err)
 	}
 
+	var newState state
+
 	newState.ConfigPointer = &cfg
+
+	db, err := sql.Open("postgres", cfg.DBURL)
+
+	dbQueries := database.New(db)
 
 	commands := commands{
 		Cmd: make(map[string]func(*state, command) error),
