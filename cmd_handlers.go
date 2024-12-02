@@ -88,3 +88,14 @@ func handlerRegister(s *state, cmd command) error {
 	fmt.Println("Created user: ", newUser.Name)
 	return nil
 }
+
+func handlerReset(s *state, _ command) error {
+	ctx := context.Background()
+
+	err := s.db.DeleteUser(ctx)
+	if err != nil {
+		return errors.New("database cleaned")
+	}
+
+	return nil
+}
