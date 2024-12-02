@@ -34,6 +34,7 @@ func main() {
 	commands.register("register", handlerRegister)
 	commands.register("login", handlerLogin)
 	commands.register("reset", handlerReset)
+	commands.register("users", handlerUsers)
 
 	if len(os.Args) < 2 {
 		fmt.Println("Not enough commands, please provide at least a command name")
@@ -41,7 +42,7 @@ func main() {
 	commandName := os.Args[1]
 	args := os.Args[2:]
 
-	if len(args) == 0 && commandName != "reset" {
+	if len(args) == 0 && commandName != "reset" && commandName != "users" {
 		log.Fatal("username is required")
 	}
 

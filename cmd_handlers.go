@@ -99,3 +99,27 @@ func handlerReset(s *state, _ command) error {
 
 	return nil
 }
+
+func handlerUsers(s *state, _ command) error {
+	ctx := context.Background()
+	jsonData, err := gatorconfig.Read()
+	if err != nil {
+		return errors.New("error reading json file")
+	}
+	currentUser := jsonData.CurrentUserName
+
+	userList, err := s.db.GetUsers(ctx)
+	if err != nil {
+		return errors.New("problem retreiving users from database")
+	}
+
+	for _, user := range userList {
+		if user == currentUser {
+			fmt.Printf("* %v (current)\n", user)
+		} else {
+			fmt.Printf("* %v\n", user)
+		}
+	}
+
+	return nil
+}
