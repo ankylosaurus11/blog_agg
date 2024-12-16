@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
@@ -31,10 +32,20 @@ func main() {
 		Cmd: make(map[string]func(*state, command) error),
 	}
 
+	ctx := context.Background()
+
 	commands.register("register", handlerRegister)
 	commands.register("login", handlerLogin)
 	commands.register("reset", handlerReset)
 	commands.register("users", handlerUsers)
+	commands.register("agg", func(s *state, cmd command) error {
+		rssFeed, err := fetchFeed(ctx, "https://www.wagslane.dev/index.xml")
+		if err != nil {
+			return err
+		}
+		fmt.Println(rssFeed)
+		return nil
+	})
 
 	if len(os.Args) < 2 {
 		fmt.Println("Not enough commands, please provide at least a command name")
@@ -42,7 +53,7 @@ func main() {
 	commandName := os.Args[1]
 	args := os.Args[2:]
 
-	if len(args) == 0 && commandName != "reset" && commandName != "users" {
+	if len(args) == 0 && commandName != "reset" && commandName != "users" && commandName != "agg" {
 		log.Fatal("username is required")
 	}
 
