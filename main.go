@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -46,6 +47,14 @@ func main() {
 		fmt.Println(rssFeed)
 		return nil
 	})
+	commands.register("addfeed", func(s *state, cmd command) error {
+		if len(cmd.Command) < 2 {
+			return errors.New("addfeed requires two arguments: name and url")
+		}
+		name := cmd.Command[0]
+		url := cmd.Command[1]
+		return addFeed(s, cmd, name, url)
+	})
 
 	if len(os.Args) < 2 {
 		fmt.Println("Not enough commands, please provide at least a command name")
@@ -53,7 +62,7 @@ func main() {
 	commandName := os.Args[1]
 	args := os.Args[2:]
 
-	if len(args) == 0 && commandName != "reset" && commandName != "users" && commandName != "agg" {
+	if len(args) == 0 && commandName != "reset" && commandName != "users" && commandName != "agg" && commandName != "addfeed" {
 		log.Fatal("username is required")
 	}
 
