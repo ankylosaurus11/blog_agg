@@ -123,3 +123,19 @@ func handlerUsers(s *state, _ command) error {
 
 	return nil
 }
+
+func handlerFeeds(s *state, _ command) error {
+	ctx := context.Background()
+	feedList, err := s.db.GetFeeds(ctx)
+	if err != nil {
+		return errors.New("problem retreiving feeds from database")
+	}
+
+	for _, feed := range feedList {
+		fmt.Println(feed.Feed)
+		fmt.Println(feed.Url)
+		fmt.Println(feed.Name)
+	}
+
+	return nil
+}

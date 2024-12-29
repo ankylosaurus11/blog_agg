@@ -39,6 +39,7 @@ func main() {
 	commands.register("login", handlerLogin)
 	commands.register("reset", handlerReset)
 	commands.register("users", handlerUsers)
+	commands.register("feeds", handlerFeeds)
 	commands.register("agg", func(s *state, cmd command) error {
 		rssFeed, err := fetchFeed(ctx, "https://www.wagslane.dev/index.xml")
 		if err != nil {
@@ -62,7 +63,7 @@ func main() {
 	commandName := os.Args[1]
 	args := os.Args[2:]
 
-	if len(args) == 0 && commandName != "reset" && commandName != "users" && commandName != "agg" && commandName != "addfeed" {
+	if len(args) == 0 && commandName != "reset" && commandName != "users" && commandName != "agg" && commandName != "addfeed" && commandName != "feeds" {
 		log.Fatal("username is required")
 	}
 
