@@ -39,6 +39,22 @@ func addFeed(s *state, _ command, name string, url string) error {
 		return err
 	}
 
+	feed, err := s.db.GetFeed(ctx, url)
+	if err != nil {
+		return err
+	}
+
+	_, err = s.db.CreateFeedFollow(ctx, database.CreateFeedFollowParams{
+		ID:        feedID,
+		CreatedAt: now,
+		UpdatedAt: now,
+		UserID:    user.ID,
+		FeedID:    feed.ID,
+	})
+	if err != nil {
+		return err
+	}
+
 	fmt.Println("Created feed: ", newFeed.Name, newFeed.Url)
 	return nil
 }

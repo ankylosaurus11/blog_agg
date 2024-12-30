@@ -40,6 +40,7 @@ func main() {
 	commands.register("reset", handlerReset)
 	commands.register("users", handlerUsers)
 	commands.register("feeds", handlerFeeds)
+	commands.register("following", following)
 	commands.register("agg", func(s *state, cmd command) error {
 		rssFeed, err := fetchFeed(ctx, "https://www.wagslane.dev/index.xml")
 		if err != nil {
@@ -56,6 +57,13 @@ func main() {
 		url := cmd.Command[1]
 		return addFeed(s, cmd, name, url)
 	})
+	commands.register("follow", func(s *state, cmd command) error {
+		if len(cmd.Command) < 1 {
+			return errors.New("follow requires an argument: url")
+		}
+		url := cmd.Command[0]
+		return follow(s, cmd, url)
+	})
 
 	if len(os.Args) < 2 {
 		fmt.Println("Not enough commands, please provide at least a command name")
@@ -63,7 +71,7 @@ func main() {
 	commandName := os.Args[1]
 	args := os.Args[2:]
 
-	if len(args) == 0 && commandName != "reset" && commandName != "users" && commandName != "agg" && commandName != "addfeed" && commandName != "feeds" {
+	if len(args) == 0 && commandName != "reset" && commandName != "users" && commandName != "agg" && commandName != "addfeed" && commandName != "feeds" && commandName != "following" {
 		log.Fatal("username is required")
 	}
 
