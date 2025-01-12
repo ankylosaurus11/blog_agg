@@ -64,6 +64,13 @@ func main() {
 		url := cmd.Command[0]
 		return follow(s, cmd, url)
 	}))
+	commands.register("unfollow", middlewareLoggedIn(func(s *state, cmd command, user database.User) error {
+		if len(cmd.Command) < 1 {
+			return errors.New("unfollow requires an argument: url")
+		}
+		url := cmd.Command[0]
+		return unfollow(s, cmd, url)
+	}))
 
 	if len(os.Args) < 2 {
 		fmt.Println("Not enough commands, please provide at least a command name")
