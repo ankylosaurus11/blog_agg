@@ -1,12 +1,12 @@
 package main
 
 import (
-	"context"
 	"database/sql"
 	"errors"
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	_ "github.com/lib/pq"
 
@@ -33,8 +33,6 @@ func main() {
 		Cmd: make(map[string]func(*state, command) error),
 	}
 
-	ctx := context.Background()
-
 	commands.register("register", handlerRegister)
 	commands.register("login", handlerLogin)
 	commands.register("reset", handlerReset)
@@ -42,12 +40,19 @@ func main() {
 	commands.register("feeds", handlerFeeds)
 	commands.register("following", following)
 	commands.register("agg", func(s *state, cmd command) error {
-		rssFeed, err := fetchFeed(ctx, "https://www.wagslane.dev/index.xml")
+		if len(cmd.Command) != 1 {
+			return errors.New("agg requires a single duration")
+		}
+		timeRequested := cmd.Command[0]
+		timeBetweenRequests, err := time.ParseDuration(timeRequested)
 		if err != nil {
 			return err
 		}
-		fmt.Println(rssFeed)
-		return nil
+		ticker := time.NewTicker(timeBetweenRequests)
+		fmt.Println("Collecting feeds every ", timeRequested)
+		for ; ; <-ticker.C {
+			scrapeFeeds(s)
+		}
 	})
 	commands.register("addfeed", middlewareLoggedIn(func(s *state, cmd command, user database.User) error {
 		if len(cmd.Command) < 2 {
