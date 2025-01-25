@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -53,6 +54,17 @@ func main() {
 		for ; ; <-ticker.C {
 			scrapeFeeds(s)
 		}
+	})
+	commands.register("browse", func(s *state, cmd command) error {
+		limit := int32(2)
+		if len(cmd.Command) > 0 {
+			parsedLimit, err := strconv.Atoi(cmd.Command[0])
+			if err != nil {
+				return fmt.Errorf("invalid limit: %w", err)
+			}
+			limit = int32(parsedLimit)
+		}
+		return browse(s, cmd, limit)
 	})
 	commands.register("addfeed", middlewareLoggedIn(func(s *state, cmd command, user database.User) error {
 		if len(cmd.Command) < 2 {
