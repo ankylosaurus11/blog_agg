@@ -1,6 +1,6 @@
 ## Welcome to Gator! ##  
 Gator is a blog aggregator, allowing you to subscribe/follow multiple RSS feeds (from multiple users!),   
-scarpe those feeds for posts on a set interval and print the highlights of the posts to the terminal.  
+scrape those feeds for posts on a set interval and print the highlights of the posts to the terminal.  
 
 
 ##Requirements##  
